@@ -9,7 +9,10 @@ import ErrorMessage from '../../components/common/ErrorMessage';
 import { formatDate } from '../../utils/formatDate';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { Link } from 'react-router-dom';
-import { ClipboardList, IndianRupee, RefreshCw, Eye, TrendingUp, DollarSign } from 'lucide-react';
+import { ClipboardList, RefreshCw, Eye, TrendingUp, DollarSign } from 'lucide-react';
+import Card from '../../components/ui/Card';
+import Badge from '../../components/ui/Badge';
+import Button from '../../components/ui/Button';
 
 export const AdminDashboardPage = () => {
   const { token } = useAuth();
@@ -41,37 +44,42 @@ export const AdminDashboardPage = () => {
     <AdminLayout>
       <div className="space-y-8">
         {/* Header Action */}
-        <div className="flex justify-between items-center pb-2 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-900/60">
           <div>
-            <h2 className="text-xl font-extrabold text-gray-900">Dashboard Metrics</h2>
-            <p className="text-xs text-gray-400 mt-1">Real-time summaries of orders, revenue, and activities.</p>
+            <h2 className="text-xl font-extrabold text-white tracking-tight">Dashboard Overview</h2>
+            <p className="text-xs text-slate-400 mt-1">Real-time metrics on DineFlow's revenue, order queue, and daily operations.</p>
           </div>
-          <button
+          <Button
             onClick={fetchStats}
-            disabled={loading}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-600 transition-colors"
+            loading={loading}
+            variant="outline"
+            className="self-start sm:self-auto"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Refresh Stats</span>
-          </button>
+            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh Metrics</span>
+          </Button>
         </div>
 
         {/* Loaders & Errors */}
-        {loading && <LoadingSpinner />}
+        {loading && (
+          <div className="py-20 flex justify-center">
+            <LoadingSpinner />
+          </div>
+        )}
         {error && <ErrorMessage message={error} />}
 
         {!loading && !error && stats && (
-          <div className="space-y-8">
+          <div className="space-y-8 animate-in fade-in duration-300">
             {/* Stat Cards Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <StatCard
-                label="Total Orders"
+                label="Total Orders Placed"
                 value={stats.totalOrders}
                 icon={ClipboardList}
                 color="blue"
               />
               <StatCard
-                label="Total Revenue"
+                label="Total Revenue Generated"
                 value={formatCurrency(stats.totalRevenue)}
                 icon={DollarSign}
                 color="emerald"
@@ -85,12 +93,15 @@ export const AdminDashboardPage = () => {
             </div>
 
             {/* Recent Orders Section */}
-            <div className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                <h3 className="text-sm font-bold text-gray-900">Recent Customer Requests</h3>
+            <Card isDarkMode={true} className="p-6 border-slate-800/80 bg-slate-900/40 backdrop-blur-xl shadow-lg">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-800/60 mb-4">
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-white">Recent Customer Requests</h3>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">Updated live</p>
+                </div>
                 <Link
                   to="/admin/orders"
-                  className="text-xs font-bold text-orange-500 hover:text-orange-600 inline-flex items-center space-x-1"
+                  className="text-xs font-bold text-orange-400 hover:text-orange-300 inline-flex items-center space-x-1 transition-colors"
                 >
                   <span>View All Queue</span>
                   <Eye className="h-3.5 w-3.5" />
@@ -98,60 +109,48 @@ export const AdminDashboardPage = () => {
               </div>
 
               {stats.recentOrders && stats.recentOrders.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-100">
+                <div className="overflow-x-auto scrollbar-none">
+                  <table className="min-w-full divide-y divide-slate-800/60">
                     <thead>
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
-                          Order ID
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
-                          Customer
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
-                          Date
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">
-                          Amount
-                        </th>
-                        <th className="px-4 py-3 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">
-                          Payment
-                        </th>
-                        <th className="px-4 py-3 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">
-                          Status
-                        </th>
+                      <tr className="text-left text-xs font-bold text-slate-500 uppercase tracking-widest">
+                        <th className="px-4 py-3">Order Reference</th>
+                        <th className="px-4 py-3">Customer</th>
+                        <th className="px-4 py-3">Date/Time</th>
+                        <th className="px-4 py-3 text-right">Amount</th>
+                        <th className="px-4 py-3 text-center">Payment</th>
+                        <th className="px-4 py-3 text-center">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-50">
+                    <tbody className="divide-y divide-slate-850/40">
                       {stats.recentOrders.map((order) => (
-                        <tr key={order.id} className="text-sm hover:bg-gray-50/30">
-                          <td className="px-4 py-3.5 whitespace-nowrap font-extrabold text-gray-900">
+                        <tr key={order.id} className="text-xs hover:bg-slate-800/20 transition-colors">
+                          <td className="px-4 py-4 whitespace-nowrap font-extrabold text-white">
                             #DF-ORD-{order.id}
                           </td>
-                          <td className="px-4 py-3.5 whitespace-nowrap text-gray-700">
+                          <td className="px-4 py-4 whitespace-nowrap text-slate-350 font-semibold">
                             {order.customer_name}
                           </td>
-                          <td className="px-4 py-3.5 whitespace-nowrap text-xs text-gray-500">
+                          <td className="px-4 py-4 whitespace-nowrap text-[10px] text-slate-500 font-semibold">
                             {formatDate(order.created_at)}
                           </td>
-                          <td className="px-4 py-3.5 whitespace-nowrap text-right font-bold text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-right font-bold text-white">
                             {formatCurrency(order.total_amount)}
                           </td>
-                          <td className="px-4 py-3.5 whitespace-nowrap text-center text-xs text-gray-500">
+                          <td className="px-4 py-4 whitespace-nowrap text-center text-slate-400 font-bold">
                             {order.payment_method}
                           </td>
-                          <td className="px-4 py-3.5 whitespace-nowrap text-center text-xs">
-                            <span
-                              className={`inline-block px-2 py-0.5 font-semibold rounded ${
+                          <td className="px-4 py-4 whitespace-nowrap text-center">
+                            <Badge
+                              variant={
                                 order.status === 'Completed'
-                                  ? 'bg-emerald-50 text-emerald-700'
+                                  ? 'success'
                                   : order.status === 'Preparing'
-                                  ? 'bg-blue-50 text-blue-700'
-                                  : 'bg-amber-50 text-amber-700'
-                              }`}
+                                  ? 'info'
+                                  : 'warning'
+                              }
                             >
                               {order.status}
-                            </span>
+                            </Badge>
                           </td>
                         </tr>
                       ))}
@@ -159,9 +158,9 @@ export const AdminDashboardPage = () => {
                   </table>
                 </div>
               ) : (
-                <p className="text-sm text-gray-400 text-center py-6">No recent orders found.</p>
+                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider text-center py-10">No recent orders found.</p>
               )}
-            </div>
+            </Card>
           </div>
         )}
       </div>

@@ -8,18 +8,19 @@ import OrdersTable from '../../components/admin/OrdersTable';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import EmptyState from '../../components/common/EmptyState';
-import { RefreshCw, ClipboardList } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
+import Button from '../../components/ui/Button';
 
 export const AdminOrdersPage = () => {
   const { token } = useAuth();
-  const { orders, loading, error, refetch } = useOrders(); // Auto resolves all orders for Admin
+  const { orders, loading, error, refetch } = useOrders();
   const [actionError, setActionError] = useState('');
 
   const handleStatusChange = async (orderId, newStatus) => {
     setActionError('');
     try {
       await updateOrderStatus(orderId, newStatus, token);
-      refetch(); // Refresh list on success
+      refetch();
     } catch (err) {
       console.error('Failed to update order status:', err);
       setActionError(err.response?.data?.message || 'Error occurred while updating order status.');
@@ -41,31 +42,35 @@ export const AdminOrdersPage = () => {
     <AdminLayout>
       <div className="space-y-6">
         {/* Header toolbar */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-900/60">
           <div>
-            <h2 className="text-xl font-extrabold text-gray-900">Manage Orders Queue</h2>
-            <p className="text-xs text-gray-400 mt-1">Review active customer requests and update preparing status.</p>
+            <h2 className="text-xl font-extrabold text-white tracking-tight">Manage Orders Queue</h2>
+            <p className="text-xs text-slate-400 mt-1">Review active customer requests, manage payment status, and dispatch dishes.</p>
           </div>
-          <button
+          <Button
             onClick={refetch}
-            disabled={loading}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-600 transition-colors"
-            title="Refresh list"
+            loading={loading}
+            variant="outline"
+            className="self-start sm:self-auto"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh Queue</span>
-          </button>
+          </Button>
         </div>
 
         {/* Action Error Banner */}
         {actionError && (
-          <div className="p-4 bg-red-50 border border-red-200 text-xs font-semibold text-red-700 rounded-xl">
+          <div className="p-4 bg-red-500/5 border border-red-500/20 text-xs font-bold text-red-400 rounded-xl leading-relaxed">
             {actionError}
           </div>
         )}
 
         {/* Loaders / Errors / Table */}
-        {loading && <LoadingSpinner />}
+        {loading && (
+          <div className="py-20 flex justify-center">
+            <LoadingSpinner />
+          </div>
+        )}
         {error && <ErrorMessage message={error} />}
 
         {!loading && !error && (

@@ -3,7 +3,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signup } from '../../services/authService';
 import CustomerLayout from '../../components/layout/CustomerLayout';
-import { UserPlus, User, Mail, Phone, Key, CheckCircle, ShieldAlert } from 'lucide-react';
+import { UserPlus, User, Mail, Phone, Key, CheckCircle, ShieldAlert, MapPin, Building } from 'lucide-react';
+import Card from '../../components/ui/Card';
+import Input from '../../components/ui/Input';
+import Button from '../../components/ui/Button';
+import { motion } from 'framer-motion';
 
 export const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -63,8 +67,6 @@ export const SignupPage = () => {
     }
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -77,7 +79,7 @@ export const SignupPage = () => {
       setSuccess(true);
       setTimeout(() => {
         navigate('/login', { replace: true });
-      }, 2500);
+      }, 2550);
     } catch (err) {
       console.error('Signup error:', err);
       setErrorMessage(err.response?.data?.message || 'Failed to create account. Please try again.');
@@ -88,202 +90,145 @@ export const SignupPage = () => {
 
   return (
     <CustomerLayout>
-      <div className="flex flex-col items-center justify-center min-h-[70vh] py-6 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="flex justify-center">
-            <span className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-orange-500/25">
-              DF
-            </span>
+      <div className="relative min-h-screen flex flex-col items-center justify-center py-12 sm:px-6 lg:px-8 overflow-hidden bg-[#070b13] text-slate-100 -mx-4 -my-8 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        
+        {/* Ambient Glows */}
+        <div className="absolute top-1/4 left-1/4 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-orange-500/5 blur-[120px] pointer-events-none z-0" />
+        <div className="absolute bottom-1/4 right-1/4 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-amber-500/5 blur-[120px] pointer-events-none z-0" />
+
+        <div className="relative z-10 w-full sm:mx-auto sm:w-full sm:max-w-md space-y-6">
+          <div className="text-center space-y-3">
+            <div className="flex justify-center">
+              <span className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-orange-500/25">
+                DF
+              </span>
+            </div>
+            <h2 className="text-2xl font-black tracking-tight text-white">
+              Create your account
+            </h2>
+            <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">
+              Or{' '}
+              <Link to="/login" className="text-orange-400 hover:text-orange-300 font-extrabold transition-colors">
+                sign in to your existing account
+              </Link>
+            </p>
           </div>
-          <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link to="/login" className="font-semibold text-orange-500 hover:text-orange-600">
-              sign in to your existing account
-            </Link>
-          </p>
-        </div>
 
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 border border-gray-100 rounded-3xl shadow-sm sm:px-10">
-            {success ? (
-              <div className="text-center py-6 space-y-3">
-                <div className="inline-flex p-3 bg-emerald-50 text-emerald-500 rounded-full">
-                  <CheckCircle className="h-10 w-10 animate-bounce" />
+          <div className="w-full">
+            <Card isDarkMode={true} className="p-8 sm:p-10 border-slate-800/80 bg-slate-900/60 backdrop-blur-xl shadow-2xl">
+              {success ? (
+                <div className="text-center py-8 space-y-4">
+                  <div className="inline-flex p-3 bg-emerald-500/10 text-emerald-450 border border-emerald-500/20 rounded-full">
+                    <CheckCircle className="h-10 w-10 animate-bounce" />
+                  </div>
+                  <h3 className="text-lg font-black text-white">Account Created!</h3>
+                  <p className="text-xs text-slate-450 leading-relaxed font-semibold">
+                    Thank you for signing up. Redirecting you to the sign in page...
+                  </p>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">Account Created!</h3>
-                <p className="text-sm text-gray-500 leading-normal">
-                  Thank you for signing up. Redirecting you to the sign in page...
-                </p>
-              </div>
-            ) : (
-              <>
-                {errorMessage && (
-                  <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start space-x-2 text-red-700 text-xs font-medium">
-                    <ShieldAlert className="h-4.5 w-4.5 text-red-500 flex-shrink-0" />
-                    <span>{errorMessage}</span>
-                  </div>
-                )}
-
-                <form className="space-y-5" onSubmit={handleSubmit}>
-                  {/* Name */}
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                      Full Name
-                    </label>
-                    <div className="relative rounded-xl shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                        <User className="h-4 w-4" />
-                      </div>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="e.g. Sami ullah"
-                        className={`block w-full pl-10 pr-3 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 ${errors.name
-                          ? 'border-red-300 focus:ring-red-100 focus:border-red-500'
-                          : 'border-gray-200 focus:ring-orange-100 focus:border-orange-500'
-                          }`}
-                      />
+              ) : (
+                <>
+                  {errorMessage && (
+                    <div className="mb-6 p-4 rounded-xl bg-red-500/5 border border-red-500/20 flex items-start space-x-2 text-red-400 text-xs font-bold leading-relaxed">
+                      <ShieldAlert className="h-4.5 w-4.5 text-red-500 flex-shrink-0" />
+                      <span>{errorMessage}</span>
                     </div>
-                    {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
-                  </div>
+                  )}
 
-                  {/* Email */}
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                      Email Address
-                    </label>
-                    <div className="relative rounded-xl shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                        <Mail className="h-4 w-4" />
-                      </div>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="e.g. customer@dineflow.com"
-                        className={`block w-full pl-10 pr-3 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 ${errors.email
-                          ? 'border-red-300 focus:ring-red-100 focus:border-red-500'
-                          : 'border-gray-200 focus:ring-orange-100 focus:border-orange-500'
-                          }`}
-                      />
-                    </div>
-                    {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                      Password (6+ characters)
-                    </label>
-                    <div className="relative rounded-xl shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                        <Key className="h-4 w-4" />
-                      </div>
-                      <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="••••••••"
-                        className={`block w-full pl-10 pr-3 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 ${errors.password
-                          ? 'border-red-300 focus:ring-red-100 focus:border-red-500'
-                          : 'border-gray-200 focus:ring-orange-100 focus:border-orange-500'
-                          }`}
-                      />
-                    </div>
-                    {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
-                  </div>
-
-                  {/* Phone number (optional) */}
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                      Phone Number (optional)
-                    </label>
-                    <div className="relative rounded-xl shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                        <Phone className="h-4 w-4" />
-                      </div>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="e.g. +1234567890"
-                        className="block w-full pl-10 pr-3 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 border-gray-200 focus:ring-orange-100 focus:border-orange-500"
-                      />
-                    </div>
-                    <p className="mt-1 text-xs text-gray-500">Optional: used for SMS order updates if provided.</p>
-                  </div>
-
-                  {/* Delivery Address */}
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                      Delivery Address
-                    </label>
-                    <textarea
-                      name="address"
-                      value={formData.address}
+                  <form className="space-y-5" onSubmit={handleSubmit}>
+                    {/* Name */}
+                    <Input
+                      label="Full Name"
+                      type="text"
+                      name="name"
+                      value={formData.name}
                       onChange={handleChange}
-                      rows={3}
-                      className={`block w-full pr-3 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 ${errors.address
-                        ? 'border-red-300 focus:ring-red-100 focus:border-red-500'
-                        : 'border-gray-200 focus:ring-orange-100 focus:border-orange-500'
-                        }`}
+                      placeholder="e.g. Sami ullah"
+                      icon={User}
+                      error={errors.name}
                     />
-                    {errors.address && <p className="mt-1 text-xs text-red-600">{errors.address}</p>}
-                  </div>
 
-                  {/* City */}
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                      City
-                    </label>
-                    <input
+                    {/* Email */}
+                    <Input
+                      label="Email Address"
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="e.g. customer@dineflow.com"
+                      icon={Mail}
+                      error={errors.email}
+                    />
+
+                    {/* Password */}
+                    <Input
+                      label="Password"
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="••••••••"
+                      icon={Key}
+                      error={errors.password}
+                    />
+
+                    {/* Phone */}
+                    <Input
+                      label="Phone Number (optional)"
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="e.g. +923001234567"
+                      icon={Phone}
+                    />
+
+                    {/* Delivery Address */}
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Delivery Address
+                      </label>
+                      <textarea
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        rows={2}
+                        className={`block w-full px-3.5 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 bg-[#090d16]/40 backdrop-blur-sm transition-all duration-200 ${
+                          errors.address
+                            ? 'border-red-300 focus:ring-red-950/30 focus:border-red-500'
+                            : 'border-slate-800 focus:ring-orange-950/30 focus:border-orange-500'
+                        }`}
+                        placeholder="House / Street details..."
+                      />
+                      {errors.address && <p className="text-xs text-red-400 font-bold">{errors.address}</p>}
+                    </div>
+
+                    {/* City */}
+                    <Input
+                      label="City"
                       type="text"
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
                       placeholder="e.g. Islamabad"
-                      className={`block w-full pl-3 pr-3 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 ${errors.city
-                        ? 'border-red-300 focus:ring-red-100 focus:border-red-500'
-                        : 'border-gray-200 focus:ring-orange-100 focus:border-orange-500'
-                        }`}
+                      icon={Building}
+                      error={errors.city}
                     />
-                    {errors.city && <p className="mt-1 text-xs text-red-600">{errors.city}</p>}
-                  </div>
 
-                  {/* Submit */}
-                  <div>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 active:scale-98 transition-all disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed shadow-md shadow-orange-500/10"
-                    >
-                      {loading ? (
-                        <span className="flex items-center space-x-1">
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          <span>Creating account...</span>
-                        </span>
-                      ) : (
-                        <span className="flex items-center space-x-1.5">
-                          <UserPlus className="h-4.5 w-4.5" />
-                          <span>Register</span>
-                        </span>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </>
-            )}
+                    {/* Submit */}
+                    <div className="pt-2">
+                      <Button
+                        type="submit"
+                        loading={loading}
+                        className="w-full py-3.5 text-xs uppercase tracking-widest font-black"
+                      >
+                        {loading ? 'Creating account...' : 'Register'}
+                      </Button>
+                    </div>
+                  </form>
+                </>
+              )}
+            </Card>
           </div>
         </div>
       </div>

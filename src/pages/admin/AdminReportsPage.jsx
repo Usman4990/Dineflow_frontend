@@ -1,3 +1,4 @@
+// AdminReportsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getReportSummary } from '../../services/reportService';
@@ -7,6 +8,8 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { Clock3, BarChart3, ListChecks, Award, Users, CheckCircle2, XCircle, ShoppingBag, FolderHeart, Calendar } from 'lucide-react';
+import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
 
 export const AdminReportsPage = () => {
   const { token } = useAuth();
@@ -37,27 +40,32 @@ export const AdminReportsPage = () => {
   return (
     <AdminLayout>
       <div className="space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-900/60">
           <div>
-            <h2 className="text-xl font-extrabold text-gray-900">Reports Overview</h2>
-            <p className="text-xs text-gray-400 mt-1">Full financial audits, category popularity, and detailed sales data.</p>
+            <h2 className="text-xl font-extrabold text-white tracking-tight">Reports Overview</h2>
+            <p className="text-xs text-slate-400 mt-1">Detailed audits, category performance, item popularity logs, and total revenue tracking.</p>
           </div>
-          <button
+          <Button
             onClick={fetchReport}
-            disabled={loading}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-600 transition-colors shadow-sm"
+            loading={loading}
+            variant="outline"
+            className="self-start sm:self-auto"
           >
-            <BarChart3 className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Refresh Reports</span>
-          </button>
+            <BarChart3 className={`h-3.5 w-3.5 mr-1.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh Audit Logs</span>
+          </Button>
         </div>
 
-        {loading && <LoadingSpinner />}
+        {loading && (
+          <div className="py-20 flex justify-center">
+            <LoadingSpinner />
+          </div>
+        )}
         {error && <ErrorMessage message={error} />}
 
         {!loading && report && (
-          <div className="space-y-8 animate-in fade-in duration-200">
-            {/* Stat Cards - Grid with 6 items for all requested values */}
+          <div className="space-y-8 animate-in fade-in duration-300">
+            {/* Stat Cards - Grid with 6 items */}
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
               <StatCard label="Total Orders" value={report.totalOrders} icon={ListChecks} color="blue" />
               <StatCard label="Total Revenue" value={formatCurrency(report.totalRevenue)} icon={Award} color="emerald" />
@@ -70,67 +78,67 @@ export const AdminReportsPage = () => {
             {/* Grid 1: Top Selling Items and Top Categories */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {/* Top Selling Menu Items */}
-              <section className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm flex flex-col">
-                <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
-                  <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                    <ShoppingBag className="h-4 w-4 text-orange-500" />
+              <Card isDarkMode={true} className="p-6 border-slate-800/80 bg-slate-900/40 backdrop-blur-xl shadow-lg flex flex-col">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-800/60 mb-4">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-2">
+                    <ShoppingBag className="h-4 w-4 text-orange-400" />
                     <span>Top Selling Menu Items</span>
                   </h3>
-                  <span className="text-xs text-gray-400">Based on orders</span>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">By volume</span>
                 </div>
                 {report.topSellingItems.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-10 flex-grow flex items-center justify-center">No sales data available yet.</p>
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-wider text-center py-10 flex-grow flex items-center justify-center">No sales data available yet.</p>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-100 text-sm">
+                  <div className="overflow-x-auto scrollbar-none">
+                    <table className="min-w-full divide-y divide-slate-850/40 text-xs">
                       <thead>
-                        <tr className="text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
-                          <th className="pb-3">Item Name</th>
-                          <th className="pb-3">Category</th>
-                          <th className="pb-3 text-center">Qty Sold</th>
-                          <th className="pb-3 text-right">Revenue</th>
+                        <tr className="text-left text-slate-500 font-bold uppercase tracking-widest">
+                          <th className="pb-3 px-2">Dish Name</th>
+                          <th className="pb-3 px-2">Category</th>
+                          <th className="pb-3 px-2 text-center">Qty Sold</th>
+                          <th className="pb-3 px-2 text-right">Revenue</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-50">
+                      <tbody className="divide-y divide-slate-850/40 font-semibold text-slate-350">
                         {report.topSellingItems.map((item) => (
-                          <tr key={item.id} className="hover:bg-gray-55/30">
-                            <td className="py-3 font-semibold text-gray-800">{item.name}</td>
-                            <td className="py-3 text-gray-500">{item.category}</td>
-                            <td className="py-3 text-center font-bold text-gray-700">{item.quantity_sold}</td>
-                            <td className="py-3 text-right font-extrabold text-orange-500">{formatCurrency(item.revenue_generated)}</td>
+                          <tr key={item.id} className="hover:bg-slate-800/10 transition-colors">
+                            <td className="py-3 px-2 font-bold text-white">{item.name}</td>
+                            <td className="py-3 px-2 text-slate-450">{item.category}</td>
+                            <td className="py-3 px-2 text-center font-bold text-slate-300">{item.quantity_sold}</td>
+                            <td className="py-3 px-2 text-right font-black text-orange-400">{formatCurrency(item.revenue_generated)}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                 )}
-              </section>
+              </Card>
 
               {/* Most Ordered Categories */}
-              <section className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm flex flex-col">
-                <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
-                  <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                    <FolderHeart className="h-4 w-4 text-violet-500" />
+              <Card isDarkMode={true} className="p-6 border-slate-800/80 bg-slate-900/40 backdrop-blur-xl shadow-lg flex flex-col">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-800/60 mb-4">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-2">
+                    <FolderHeart className="h-4 w-4 text-violet-400" />
                     <span>Most Ordered Categories</span>
                   </h3>
-                  <span className="text-xs text-gray-400">By total portions</span>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">By portion count</span>
                 </div>
                 {report.topCategories.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-10 flex-grow flex items-center justify-center">No category data available yet.</p>
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-wider text-center py-10 flex-grow flex items-center justify-center">No category data available yet.</p>
                 ) : (
-                  <div className="space-y-4 flex-grow">
+                  <div className="space-y-5 flex-grow flex flex-col justify-center">
                     {report.topCategories.map((cat, idx) => {
                       const maxQty = report.topCategories[0]?.quantity_sold || 1;
                       const percentage = Math.round((cat.quantity_sold / maxQty) * 100);
                       return (
                         <div key={cat.category || idx} className="space-y-2">
-                          <div className="flex items-center justify-between text-xs font-semibold text-gray-700">
-                            <span className="font-bold text-gray-900">{cat.category}</span>
-                            <span className="text-gray-500">{cat.quantity_sold} items ({formatCurrency(cat.revenue)})</span>
+                          <div className="flex items-center justify-between text-xs font-bold">
+                            <span className="text-white">{cat.category}</span>
+                            <span className="text-slate-500 text-[10px] uppercase font-bold">{cat.quantity_sold} portions ({formatCurrency(cat.revenue)})</span>
                           </div>
-                          <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                          <div className="w-full bg-slate-950/60 h-2.5 rounded-full overflow-hidden border border-slate-800/50">
                             <div 
-                              className="bg-orange-500 h-full rounded-full transition-all duration-500"
+                              className="bg-gradient-to-r from-orange-500 to-amber-500 h-full rounded-full transition-all duration-500 shadow-md shadow-orange-500/20"
                               style={{ width: `${percentage}%` }}
                             />
                           </div>
@@ -139,62 +147,62 @@ export const AdminReportsPage = () => {
                     })}
                   </div>
                 )}
-              </section>
+              </Card>
             </div>
 
-            {/* Grid 2: Daily Sales (Last 7 Days) and Monthly Revenue */}
+            {/* Grid 2: Daily Sales and Monthly Revenue */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {/* Daily Sales (Last 7 Days) */}
-              <section className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm">
-                <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
-                  <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-blue-500" />
+              <Card isDarkMode={true} className="p-6 border-slate-800/80 bg-slate-900/40 backdrop-blur-xl shadow-lg">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-800/60 mb-4">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-blue-400" />
                     <span>Daily Revenue (Last 7 Days)</span>
                   </h3>
-                  <span className="text-xs text-gray-400">Trend list</span>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Weekly trend</span>
                 </div>
                 {report.dailyRevenue.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-10">No daily sales logs published.</p>
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-wider text-center py-10">No daily sales logs published.</p>
                 ) : (
                   <div className="space-y-3">
                     {report.dailyRevenue.map((row) => (
-                      <div key={row.date} className="flex items-center justify-between text-sm py-2 px-3 hover:bg-gray-50 rounded-xl border border-transparent hover:border-gray-100 transition-all">
-                        <span className="font-medium text-gray-700">{row.date}</span>
+                      <div key={row.date} className="flex items-center justify-between text-xs py-3.5 px-4 bg-slate-950/20 hover:bg-slate-950/40 rounded-2xl border border-slate-850/50 hover:border-slate-800 transition-all font-semibold text-slate-300">
+                        <span className="font-bold text-white">{row.date}</span>
                         <div className="flex items-center gap-6">
-                          <span className="text-xs bg-blue-50 border border-blue-100 text-blue-700 px-2 py-0.5 rounded font-semibold">{row.order_count} orders</span>
-                          <span className="font-bold text-gray-900 min-w-[80px] text-right">{formatCurrency(row.revenue)}</span>
+                          <span className="text-[9px] bg-blue-500/10 border border-blue-500/20 text-blue-400 px-2 py-0.5 rounded font-black uppercase tracking-wider">{row.order_count} orders</span>
+                          <span className="font-black text-white min-w-[80px] text-right">{formatCurrency(row.revenue)}</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
-              </section>
+              </Card>
 
               {/* Monthly Revenue */}
-              <section className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm">
-                <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
-                  <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4 text-emerald-500" />
+              <Card isDarkMode={true} className="p-6 border-slate-800/80 bg-slate-900/40 backdrop-blur-xl shadow-lg">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-800/60 mb-4">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4 text-emerald-400" />
                     <span>Monthly Revenue Statistics</span>
                   </h3>
-                  <span className="text-xs text-gray-400">Aggregated monthly</span>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Yearly trend</span>
                 </div>
                 {report.monthlyRevenue.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-10">No monthly revenue logs available.</p>
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-wider text-center py-10">No monthly revenue logs available.</p>
                 ) : (
                   <div className="space-y-3">
                     {report.monthlyRevenue.map((row) => (
-                      <div key={row.month} className="flex items-center justify-between text-sm py-2 px-3 hover:bg-gray-50 rounded-xl border border-transparent hover:border-gray-100 transition-all">
-                        <span className="font-medium text-gray-700">{row.month}</span>
+                      <div key={row.month} className="flex items-center justify-between text-xs py-3.5 px-4 bg-slate-950/20 hover:bg-slate-950/40 rounded-2xl border border-slate-850/50 hover:border-slate-800 transition-all font-semibold text-slate-300">
+                        <span className="font-bold text-white">{row.month}</span>
                         <div className="flex items-center gap-6">
-                          <span className="text-xs bg-emerald-50 border border-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-semibold">{row.order_count} orders</span>
-                          <span className="font-bold text-gray-900 min-w-[80px] text-right">{formatCurrency(row.revenue)}</span>
+                          <span className="text-[9px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-450 px-2 py-0.5 rounded font-black uppercase tracking-wider">{row.order_count} orders</span>
+                          <span className="font-black text-white min-w-[80px] text-right">{formatCurrency(row.revenue)}</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
-              </section>
+              </Card>
             </div>
           </div>
         )}
